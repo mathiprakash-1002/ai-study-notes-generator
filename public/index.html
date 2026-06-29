@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudySpark AI - Intelligent Study Notes Generator</title>
+  <meta name="description" content="Generate high-quality study notes, interactive flashcards, and quizzes from any educational topic instantly using AI.">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark-theme">
+  <div class="app-container">
+    
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="url(#logo-grad)" />
+            <path d="M2 17L12 22L22 17" stroke="url(#logo-grad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M2 12L12 17L22 12" stroke="url(#logo-grad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            <defs>
+              <linearGradient id="logo-grad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#818cf8" />
+                <stop offset="1" stop-color="#ec4899" />
+              </linearGradient>
+            </defs>
+          </svg>
+          <span class="logo-text">StudySpark<span class="logo-accent">AI</span></span>
+        </div>
+        <button id="new-notes-btn" class="btn btn-secondary btn-icon-only" title="New Study Notes">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="sidebar-content">
+        <div class="history-section">
+          <div class="section-title-container">
+            <span class="sidebar-section-title">Saved Notes</span>
+            <button id="clear-history-btn" class="btn-text-danger" title="Clear all history">Clear</button>
+          </div>
+          <ul id="history-list" class="history-list">
+            <!-- Dynamically populated -->
+            <li class="history-empty">No notes generated yet</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <button id="sidebar-settings-btn" class="sidebar-action-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+          <span>Gemini Settings</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN BODY -->
+    <main class="main-content">
+      
+      <!-- TOP NAVIGATION BAR -->
+      <header class="top-navbar">
+        <div class="mobile-toggle-container">
+          <button id="mobile-menu-btn" class="btn btn-secondary btn-icon-only">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        <div class="navbar-actions">
+          <button id="theme-toggle-btn" class="theme-toggle-btn" title="Toggle Light/Dark Mode">
+            <!-- Moon (Dark mode active, click to light) -->
+            <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+            <!-- Sun (Light mode active, click to dark) -->
+            <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+          </button>
+          <div id="api-status-badge" class="api-badge badge-missing">
+            <span class="badge-dot"></span>
+            <span class="badge-label">API Key Required</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="content-body">
+        
+        <!-- INPUT / WELCOME PANEL -->
+        <section id="welcome-panel" class="workspace-panel active">
+          <div class="welcome-container">
+            <div class="welcome-header">
+              <h1>Accelerate Your Learning</h1>
+              <p>Enter any study topic and get structured study notes, flashcards, and interactive practice quizzes in seconds.</p>
+            </div>
+
+            <div class="search-card">
+              <form id="generator-form">
+                <div class="input-group">
+                  <label for="topic-input">What topic do you want to learn?</label>
+                  <div class="input-wrapper">
+                    <svg class="search-input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="11" cy="11" r="8"></circle>
+                      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" id="topic-input" placeholder="e.g. Operating Systems, Quantum Physics, Photosynthesis, Neural Networks..." required autocomplete="off">
+                  </div>
+                </div>
+
+                <div class="options-grid">
+                  <div class="control-group">
+                    <label for="tone-select">Tone & Depth</label>
+                    <div class="select-wrapper">
+                      <select id="tone-select">
+                        <option value="simple">Simple & Concise (Short summaries, direct terms)</option>
+                        <option value="detailed" selected>Detailed & Academic (In-depth explanations, standard terms)</option>
+                        <option value="creative">Creative & Analogies (Rich comparisons, visual terms)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="control-group">
+                    <label for="level-select">Academic Level</label>
+                    <div class="select-wrapper">
+                      <select id="level-select">
+                        <option value="beginner">Beginner (Middle/High School)</option>
+                        <option value="intermediate" selected>Intermediate (AP/High School/College Entry)</option>
+                        <option value="advanced">Advanced (University Degree/Specialized)</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-large btn-generate">
+                  <span>Generate Study Notes</span>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                  </svg>
+                </button>
+              </form>
+            </div>
+
+            <div class="suggested-topics">
+              <span class="suggested-label">Try these topics:</span>
+              <div class="suggestion-chips">
+                <button class="chip" data-topic="Machine Learning">Machine Learning</button>
+                <button class="chip" data-topic="Operating Systems">Operating Systems</button>
+                <button class="chip" data-topic="Photosynthesis">Photosynthesis</button>
+                <button class="chip" data-topic="Data Structures & Algorithms">Data Structures & Algorithms</button>
+                <button class="chip" data-topic="Monetary Policy">Monetary Policy</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- LOADING PANEL -->
+        <section id="loading-panel" class="workspace-panel">
+          <div class="loading-container">
+            <div class="spinner-container">
+              <div class="loading-spinner"></div>
+              <svg class="loading-center-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2L2 7L12 12L22 7L12 2Z"></path>
+                <path d="M2 17L12 22L22 17"></path>
+                <path d="M2 12L12 17L22 12"></path>
+              </svg>
+            </div>
+            
+            <h2 id="loading-topic">Generating Notes...</h2>
+            <p>Our AI is reviewing reference materials and creating your custom package.</p>
+            
+            <div class="progress-steps">
+              <div class="step active" id="step-1">
+                <span class="step-dot"></span>
+                <span class="step-label">Initializing Gemini AI Model</span>
+              </div>
+              <div class="step" id="step-2">
+                <span class="step-dot"></span>
+                <span class="step-label">Structuring definitions & concepts</span>
+              </div>
+              <div class="step" id="step-3">
+                <span class="step-dot"></span>
+                <span class="step-label">Designing mnemonic flashcards</span>
+              </div>
+              <div class="step" id="step-4">
+                <span class="step-dot"></span>
+                <span class="step-label">Creating interactive practice quiz</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- RESULT PANEL -->
+        <section id="result-panel" class="workspace-panel">
+          <div class="result-header-bar">
+            <div class="topic-info">
+              <h1 id="result-topic-title">Topic Title</h1>
+              <div class="topic-badges">
+                <span id="badge-tone" class="info-badge">Tone: Detailed</span>
+                <span id="badge-level" class="info-badge">Level: Intermediate</span>
+              </div>
+            </div>
+            <div class="result-actions">
+              <button id="export-pdf-btn" class="btn btn-secondary btn-with-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                <span>Export PDF</span>
+              </button>
+              <button id="regenerate-notes-btn" class="btn btn-primary btn-with-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+                </svg>
+                <span>Re-generate</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- TABS -->
+          <div class="tabs-navigation">
+            <button class="tab-btn active" data-tab="tab-notes">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+              </svg>
+              <span>Study Notes</span>
+            </button>
+            <button class="tab-btn" data-tab="tab-flashcards">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="3" y1="9" x2="21" y2="9"></line>
+                <line x1="9" y1="21" x2="9" y2="9"></line>
+              </svg>
+              <span>Flashcards</span>
+            </button>
+            <button class="tab-btn" data-tab="tab-quiz">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+              <span>Practice Quiz</span>
+            </button>
+          </div>
+
+          <!-- TAB CONTENT AREAS -->
+          <div class="tab-content-container">
+            
+            <!-- NOTES TAB -->
+            <div id="tab-notes" class="tab-pane active">
+              <div class="printable-area">
+                
+                <!-- Definition -->
+                <div class="notes-card definition-card">
+                  <div class="card-header-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-indigo">
+                      <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path>
+                      <line x1="12" y1="16" x2="12" y2="12"></line>
+                      <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    <h2>Core Definition</h2>
+                  </div>
+                  <p id="note-definition" class="definition-text">The core definition of the study topic will be rendered here.</p>
+                </div>
+
+                <!-- Split Layout: Concepts and Explanation -->
+                <div class="notes-grid-layout">
+                  <div class="notes-main-column">
+                    <!-- Key Concepts -->
+                    <div class="notes-card">
+                      <h2>Important Concepts</h2>
+                      <div id="note-concepts-list" class="concepts-list">
+                        <!-- Dynamically populated -->
+                      </div>
+                    </div>
+
+                    <!-- Simple Explanation & Analogy -->
+                    <div class="notes-card explanation-card">
+                      <h2>Simple Explanation</h2>
+                      <p id="note-simple-explanation">A plain-English explanation simplifying complex jargon.</p>
+                      
+                      <div class="analogy-block">
+                        <div class="analogy-header">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-pink">
+                            <path d="M15.6 11.6L22 18v3h-3l-6.4-6.4"></path>
+                            <circle cx="9" cy="9" r="6"></circle>
+                            <path d="M9 3v12"></path>
+                            <path d="M3 9h12"></path>
+                          </svg>
+                          <span>Analogy to Understand It</span>
+                        </div>
+                        <p id="note-analogy" class="analogy-text">An intuitive real-world comparison or metaphor.</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="notes-sidebar-column">
+                    <!-- Key Points -->
+                    <div class="notes-card keypoints-card">
+                      <h2>Key Points Checklist</h2>
+                      <ul id="note-keypoints-list" class="keypoints-list">
+                        <!-- Dynamically populated -->
+                      </ul>
+                    </div>
+
+                    <!-- Real-World Examples -->
+                    <div class="notes-card examples-card">
+                      <h2>Real-World Application</h2>
+                      <div id="note-examples-list" class="examples-list">
+                        <!-- Dynamically populated -->
+                      </div>
+                    </div>
+
+                    <!-- Exam Preparation Tips -->
+                    <div class="notes-card exam-tips-card">
+                      <div class="card-header-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-amber">
+                          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                          <line x1="12" y1="9" x2="12" y2="13"></line>
+                          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                        </svg>
+                        <h2>Exam Preparation Tips</h2>
+                      </div>
+                      <ul id="note-examtips-list" class="examtips-list">
+                        <!-- Dynamically populated -->
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- FLASHCARDS TAB -->
+            <div id="tab-flashcards" class="tab-pane">
+              <div class="flashcards-container">
+                <div class="flashcard-deck">
+                  <!-- Flashcard Element -->
+                  <div class="flashcard" id="flashcard-el">
+                    <div class="flashcard-inner">
+                      <!-- Front -->
+                      <div class="flashcard-front">
+                        <span class="card-side-label">Front</span>
+                        <div class="card-content">
+                          <h3 id="card-front-text">Flashcard Question</h3>
+                        </div>
+                        <span class="card-hint">Click to flip card</span>
+                      </div>
+                      <!-- Back -->
+                      <div class="flashcard-back">
+                        <span class="card-side-label">Back</span>
+                        <div class="card-content">
+                          <p id="card-back-text">Flashcard Answer / Explanation</p>
+                        </div>
+                        <span class="card-hint">Click to flip back</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Deck Controls -->
+                <div class="deck-controls">
+                  <button id="prev-card-btn" class="btn btn-secondary btn-icon-only" title="Previous Card">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                  </button>
+                  <span id="card-counter" class="card-counter">1 of 5</span>
+                  <button id="next-card-btn" class="btn btn-secondary btn-icon-only" title="Next Card">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                  </button>
+                </div>
+
+                <div class="deck-actions">
+                  <button id="reset-cards-btn" class="btn btn-text">Reset Flashcards</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- QUIZ TAB -->
+            <div id="tab-quiz" class="tab-pane">
+              <div class="quiz-container">
+                <!-- Quiz Progress -->
+                <div class="quiz-header">
+                  <div class="quiz-score-tracker">
+                    <span>Practice Score:</span>
+                    <span id="quiz-score-badge" class="score-badge">0 / 0</span>
+                  </div>
+                  <button id="reset-quiz-btn" class="btn btn-secondary btn-small">Reset Quiz</button>
+                </div>
+
+                <!-- Quiz Questions List -->
+                <div id="quiz-questions-container" class="quiz-questions-list">
+                  <!-- Dynamically populated questions -->
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- SETTINGS MODAL (Gemini API Configuration) -->
+  <div id="settings-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>Gemini API Configuration</h2>
+        <button id="modal-close-btn" class="modal-close-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>This application uses Google Gemini to generate custom study resources. To get started, configure your API Key below.</p>
+        
+        <div class="alert-info-box">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-indigo">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+          <div>
+            <strong>Option 1 (Recommended):</strong> Add <code>GEMINI_API_KEY=your_key</code> in a <code>.env</code> file in your server directory and restart the server.
+          </div>
+        </div>
+
+        <div class="modal-form-group">
+          <label for="api-key-input">Option 2: Enter API Key directly in browser</label>
+          <input type="password" id="api-key-input" placeholder="AIzaSy..." autocomplete="off">
+          <span class="input-hint">Your API Key is stored securely in your local browser storage and is never saved on external servers. Get a free key from <a href="https://aistudio.google.com/" target="_blank" rel="noopener">Google AI Studio</a>.</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="api-key-clear-btn" class="btn btn-secondary text-danger">Clear Local Key</button>
+        <button id="api-key-save-btn" class="btn btn-primary">Save Changes</button>
+      </div>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
